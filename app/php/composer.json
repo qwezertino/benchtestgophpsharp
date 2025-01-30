@@ -1,0 +1,18 @@
+{
+    "name": "terminator/bench-tests",
+    "require": {
+        "swoole-bundle/swoole-bundle": "^0.22.1",
+        "openswoole/core": "^22.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Terminator\\BenchTests\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "qwezert",
+            "email": "qwezertino@gmail.com"
+        }
+    ]
+}

@@ -1,0 +1,117 @@
+version: "3.8"
+x-env-aliases:
+  - &DEFAULT_BUILD_ARGS
+    PHP_TAG: "${PHP_VERSION:-8.1}-cli-alpine${ALPINE_VERSION:-3.19}"
+    PHP_API_VERSION: "${PHP_API_VERSION:-20210902}"
+    COMPOSER_ARGS: "${COMPOSER_ARGS:-install}"
+    COMPOSER_AUTH: "${COMPOSER_AUTH:-}"
+    SWOOLE_EXTENSION: "${SWOOLE_EXTENSION:-openswoole}"
+    SWOOLE_VERSION: "${SWOOLE_VERSION:-v22.1.2}"
+    COMPOSER_TAG: "${COMPOSER_TAG:-2.5.2}"
+    XDEBUG_TAG: "${XDEBUG_TAG:-3.3.1}"
+
+volumes:
+  coverage: {}
+
+services:
+  releaser:
+    image: "docker.io/symfonywithswoole/release-version-script:0.5.0"
+    environment:
+      DEBUG: "${DEBUG:-0}"
+      DRY_RUN: "${DRY_RUN:-1}"
+      GH_REPOSITORY: "${GH_REPOSITORY:-symfony-swoole/swoole-bundle}"
+      GH_COMMITER_NAME: "${GH_COMMITER_NAME:-symfony-swoole-bot}"
+      GH_COMMITER_EMAIL: "${GH_COMMITER_EMAIL:-147276322+symfony-swoole-bot@users.noreply.github.com}"
+      GH_COMMITER_SIGNING_KEY: "${GH_COMMITER_SIGNING_KEY:-xxxx}"
+      GH_COMMITER_PGP_PRIVATE_KEY: "${GH_COMMITER_PGP_PRIVATE_KEY:-xxxx}"
+      GH_TOKEN: "${GH_TOKEN:-xxxxxxxx}"
+      GH_RELEASE_DRAFT: "${GH_RELEASE_DRAFT:-false}"
+      GH_RELEASE_PRERELEASE: "${GH_RELEASE_PRERELEASE:-false}"
+    volumes:
+      - "./.git:/usr/src/app/.git:rw"
+      - "./CHANGELOG.md:/usr/src/app/CHANGELOG.md:rw"
+
+  cli:
+    image: "${REGISTRY:-docker.io}/${NAMESPACE:-symfonywithswoole}/${IMAGE:-swoole-bundle}-cli:${TAG:-local}"
+    container_name: swoole-bundle-cli
+    build:
+      context: .
+      target: cli
+      args:
+        <<: *DEFAULT_BUILD_ARGS
+    environment:
+      DATABASE_HOST: 'db'
+    ports:
+      - 9501:9501
+
+  composer:
+    image: "${REGISTRY:-docker.io}/${NAMESPACE:-symfonywithswoole}/${IMAGE:-swoole-bundle}-composer:${TAG:-local}"
+    build:
+      context: .
+      target: composer
+      args:
+        <<: *DEFAULT_BUILD_ARGS
+    environment:
+      DATABASE_HOST: 'db'
+
+  ci:
+    image: "${REGISTRY:-docker.io}/${NAMESPACE:-symfonywithswoole}/${IMAGE:-swoole-bundle}-ci:${TAG:-local}"
+    build:
+      context: .
+      target: ci
+      args:
+        <<: *DEFAULT_BUILD_ARGS
+    environment:
+      DATABASE_HOST: 'db'
+
+  coverage-xdebug:
+    image: "${REGISTRY:-docker.io}/${NAMESPACE:-symfonywithswoole}/${IMAGE:-swoole-bundle}-coverage-xdebug:${TAG:-local}"
+    build:
+      context: .
+      target: CoverageXdebug
+      args:
+        <<: *DEFAULT_BUILD_ARGS
+    environment:
+      DATABASE_HOST: 'db'
+
+  coverage-pcov:
+    image: "${REGISTRY:-docker.io}/${NAMESPACE:-symfonywithswoole}/${IMAGE:-swoole-bundle}-coverage-pcov:${TAG:-local}"
+    build:
+      context: .
+      target: CoveragePcov
+      args:
+        <<: *DEFAULT_BUILD_ARGS
+    environment:
+      DATABASE_HOST: 'db'
+
+  coverage-xdebug-feature-with-retry:
+    image: "${REGISTRY:-docker.io}/${NAMESPACE:-symfonywithswoole}/${IMAGE:-swoole-bundle}-coverage-xdebug:${TAG:-local}"
+    entrypoint:
+      - /bin/bash
+    command:
+      - tests/run-feature-tests-code-coverage.sh
+    build:
+      context: .
+      target: CoverageXdebug
+      args:
+        <<: *DEFAULT_BUILD_ARGS
+    environment:
+      DATABASE_HOST: 'db'
+
+  merge-code-coverage:
+    image: "${REGISTRY:-docker.io}/${NAMESPACE:-symfonywithswoole}/${IMAGE:-swoole-bundle}-merge-code-coverage:${MERGE_COVERAGE_TAG:-local}"
+    command: merge-code-coverage
+    build:
+      context: .
+      target: MergeCodeCoverage
+      args:
+        <<: *DEFAULT_BUILD_ARGS
+
+  db:
+    container_name: swoole-bundle-db
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+      MYSQL_DATABASE: db

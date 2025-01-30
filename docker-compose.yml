@@ -1,0 +1,25 @@
+services:
+  swoole-php:
+    build:
+      context: .
+      dockerfile: ./docker/images/php/Dockerfile  # Specify the path to the Dockerfile
+    ports:
+      - 8101:8101
+    volumes:
+      - ./app/php/:/app
+  go-app:
+    build:
+      context: .  # Set the context to the root of your project
+      dockerfile: ./docker/images/golang/Dockerfile  # Specify the path to the Dockerfile
+    ports:
+      - 8102:8101  # Map the port 8101 in the container to 8102 on the host
+    volumes:
+      - ./app/golang/:/app
+  dotnet-app:
+    build:
+      context: .
+      dockerfile: ./docker/images/dotnet/Dockerfile  # Specify the path to the Dockerfile
+    ports:
+      - "8103:8101"
+    volumes:
+      - ./app/dotnet/:/app

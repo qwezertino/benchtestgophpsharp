@@ -1,0 +1,24 @@
+<?php
+
+declare(strict_types=1);
+
+namespace SwooleBundle\SwooleBundle\Tests\Fixtures\Symfony\TestBundle\Service\NoAutowiring;
+
+use Doctrine\Bundle\DoctrineBundle\Registry;
+
+final class ResetCountingRegistry extends Registry
+{
+    private int $resetCount = 0;
+
+    public function reset(): void
+    {
+        ++$this->resetCount;
+
+        parent::reset();
+    }
+
+    public function getResetCount(): int
+    {
+        return $this->resetCount;
+    }
+}

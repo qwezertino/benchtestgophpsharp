@@ -1,0 +1,38 @@
+<?php
+
+declare(strict_types=1);
+
+namespace SwooleBundle\SwooleBundle\Tests\Unit\Bridge\Symfony\HttpFoundation;
+
+use PHPUnit\Framework\TestCase;
+use SwooleBundle\SwooleBundle\Bridge\Symfony\HttpFoundation\SetRequestRuntimeConfiguration;
+use Symfony\Component\HttpFoundation\Request;
+
+final class SetRequestRuntimeConfigurationTest extends TestCase
+{
+    /**
+     * @var SetRequestRuntimeConfiguration
+     */
+    private $configuration;
+
+    protected function setUp(): void
+    {
+        $this->configuration = new SetRequestRuntimeConfiguration();
+    }
+
+    public function testBoot(): void
+    {
+        $configuration = [
+            'trustedHosts' => ['127.0.0.1', 'localhost'],
+            'trustedProxies' => ['192.168.1.0/24', '73.41.22.1', 'varnish'],
+            'trustedHeaderSet' => Request::HEADER_X_FORWARDED_AWS_ELB,
+        ];
+
+        $this->configuration->boot($configuration);
+
+        self::assertSame(['{127.0.0.1}i', '{localhost}i'], Request::getTrustedHosts());
+
+        self::assertSame($configuration['trustedProxies'], Request::getTrustedProxies());
+        self::assertSame($configuration['trustedHeaderSet'], Request::getTrustedHeaderSet());
+    }
+}
