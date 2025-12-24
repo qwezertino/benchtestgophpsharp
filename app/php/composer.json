@@ -1,6 +1,8 @@
 {
     "name": "terminator/bench-tests",
-    "require": {},
+    "require": {
+        "openswoole/ide-helper": "^22.1"
+    },
     "autoload": {
         "psr-4": {
             "Terminator\\BenchTests\\": "src/"

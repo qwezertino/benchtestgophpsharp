@@ -1,0 +1,6 @@
+# .NET build outputs
+app/dotnet/obj/
+app/dotnet/bin/
+
+# PHP dependencies
+app/php/vendor/

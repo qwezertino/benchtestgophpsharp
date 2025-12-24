@@ -42,7 +42,7 @@ WORKDIR /app
 
 # Install Composer dependencies
 COPY ./app/php/composer.json /app/composer.json
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install
 
 # COPY ./app /app
 

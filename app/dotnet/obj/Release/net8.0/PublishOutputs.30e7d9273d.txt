@@ -1,8 +1,0 @@
-/home/terminator/WorkFiles/ProjectsPHP/BenchTests/app/dotnet/out/dotnet
-/home/terminator/WorkFiles/ProjectsPHP/BenchTests/app/dotnet/out/appsettings.Development.json
-/home/terminator/WorkFiles/ProjectsPHP/BenchTests/app/dotnet/out/appsettings.json
-/home/terminator/WorkFiles/ProjectsPHP/BenchTests/app/dotnet/out/data.json
-/home/terminator/WorkFiles/ProjectsPHP/BenchTests/app/dotnet/out/dotnet.dll
-/home/terminator/WorkFiles/ProjectsPHP/BenchTests/app/dotnet/out/dotnet.deps.json
-/home/terminator/WorkFiles/ProjectsPHP/BenchTests/app/dotnet/out/dotnet.runtimeconfig.json
-/home/terminator/WorkFiles/ProjectsPHP/BenchTests/app/dotnet/out/dotnet.pdb
